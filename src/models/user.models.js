@@ -16,7 +16,7 @@ const userSchema = new Schema({
         unique:true,
         trim:true,
     },
-    fullname:{
+    fullName:{
         type:String,
         require:true,
         trim:true,
@@ -26,7 +26,7 @@ const userSchema = new Schema({
         type:String, //cloudnary url
         required:true,
     },
-    converImg:{
+    coverImage:{
         type:String, //cloudnary url
     },
     watchHistory:{
@@ -38,13 +38,13 @@ const userSchema = new Schema({
         required:[true,'Password is required']
     },
     refreshToken:{
-        type:string
+        type:String
 
     }
 },{timestamps:true})
 
 userSchema.pre("save",async function(next){
-    if(!this.ismodifiled("password")) return next();
+    if(!this.isModified("password")) return next();
 
     this.password = await bcrpt.hash(this.password,10)
     next()
@@ -54,12 +54,12 @@ userSchema.methods.ispasswordCorrect = async function(password){
     return await bcrpt.compare(password,this.password)
 }
 
-userSchema.methods.generateAccessToken = fuction(){
+userSchema.methods.generateAccessToken = function(){
     return jwt.sign({
         _id:this._id,
         email:this.email,
         username:this.username,
-        fullname:this.fullname
+        fullname:this.fullName
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
@@ -67,13 +67,13 @@ userSchema.methods.generateAccessToken = fuction(){
     }
 )
 }
-userSchema.methods.generateRefressToken = fuction(){
+userSchema.methods.generateRefressToken = function(){
     return jwt.sign({
         _id:this._id,
     },
     process.env.REFRESH_TOKEN_SECRET,
     {
-        expiresIn:process.env.REFRESH_TOKEN_EXPERY
+        expiresIn:process.env.REFRESH_TOKEN_EXPIRY
     }
 )
 }

@@ -1,19 +1,28 @@
 import { Router } from "express";
-import { registerUser } from "../controllers/user.controller.js";
+import { logOutUser,loginUser,registerUser,refreshAccessToken } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router()
 
-router.route("/register").post(upload.fields([
+const v =router.route("/register").post(upload.fields([
     {
         name:"avatar",
         maxcount:1
     },
     {
-        name:"coverImg",
+        name:"coverImage",
         maxcount:2
     }
 ]),registerUser)
-// router.route("/login").post(login)               
+// console.log(v?.key)
+// router.route("/login").post(login)    
+
+router.route("/login").post(loginUser)
+
+// secured routes
+router.route("/logout").post(verifyJWT,logOutUser)
+
+router.route("/refresh-token").post(refreshAccessToken)
 
 export default router
